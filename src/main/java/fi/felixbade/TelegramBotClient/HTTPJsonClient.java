@@ -6,18 +6,16 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 public class HTTPJsonClient {
+
+    private static final Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 1080));
 
     public static JsonObject get(String url) throws IOException {
         String response = rawGet(url);
@@ -41,16 +39,16 @@ public class HTTPJsonClient {
             return "";
         }
 
-        URLConnection connection = url2.openConnection();
+        URLConnection connection = url2.openConnection(proxy);
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String response = "";
+        StringBuilder response = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            response += line;
+            response.append(line);
         }
 
         reader.close();
-        return response;
+        return response.toString();
     }
 
     private static String rawPost(String url, String body) throws IOException {
@@ -61,7 +59,7 @@ public class HTTPJsonClient {
             return null;
         }
 
-        HttpURLConnection connection = (HttpURLConnection) url2.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url2.openConnection(proxy);
         connection.setRequestMethod("POST");
         connection.setDoInput(true);
         connection.setDoOutput(true);
@@ -71,19 +69,18 @@ public class HTTPJsonClient {
         connection.setRequestProperty("Accept", "application/json");
 
         DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "utf-8"));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
         writer.write(body);
         writer.close();
         out.close();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String response = "";
+        StringBuilder response = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            response += line;
+            response.append(line);
         }
         reader.close();
-
-        return response;
+        return response.toString();
     }
 }

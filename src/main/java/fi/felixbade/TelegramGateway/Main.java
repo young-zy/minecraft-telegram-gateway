@@ -43,15 +43,21 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            // if no one is in server, do nothing
+            if (Bukkit.getServer().getOnlinePlayers().size() == 0) {
+                return;
+            }
             TelegramUpdate[] updates = telegram.getNextUpdates();
             for (TelegramUpdate update : updates) {
                 if (update.message != null) {
                     TelegramMessage message = update.message;
 
                     long chatId = message.chat.id;
-                    if (chatId == this.telegramChatId) {
+                    if (chatId == telegramChatId) {
                         TextComponent formatted = Formatting.formatTelegramMessageToMinecraft(message);
-                        Bukkit.getServer().spigot().broadcast(formatted);
+//                        logger.info(formatted.toPlainText());
+                        Bukkit.broadcastMessage(formatted.toLegacyText().replaceAll("null", ""));
+//                        Bukkit.getServer().spigot().broadcast(formatted);
 
                     } else {
                         logger.warning(String.format("Message from an unknown chat: %d", chatId));
@@ -65,7 +71,7 @@ public class Main extends JavaPlugin implements Listener {
                     }
                 }
             }
-        }, 10, 10);
+        }, 10, 40);
     }
 
     @EventHandler

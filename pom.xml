@@ -19,6 +19,17 @@
             <artifactId>spigot-api</artifactId>
             <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
@@ -44,7 +55,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!-- Sets the custom JARfile name (Project name without spaces is good) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
